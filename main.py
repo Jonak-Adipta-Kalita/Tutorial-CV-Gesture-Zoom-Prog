@@ -1,4 +1,4 @@
-import cv2
+import cv2, os
 import HandTrackingModule as htm
 
 cap = cv2.VideoCapture(0)
@@ -11,11 +11,20 @@ startDist = None
 scale = 0
 cx, cy = 500, 500
 
+listImg = os.listdir("images")
+imgList = []
+
+for imgPath in listImg:
+    img = cv2.imread(f"images/{imgPath}")
+    imgList.append(img)
+
+indexImg = 0
+
 while True:
     _, img = cap.read()
     img = cv2.flip(img, 2)
     hands, img = detector.findHands(img, flipType=False)
-    img1 = cv2.imread("picture.jpg")
+    img1 = imgList[indexImg]
 
     if len(hands) == 2:
         hand1 = hands[0]
@@ -54,4 +63,15 @@ while True:
         print(f"Exception: {e}")
 
     cv2.imshow("JAK Gesture Zoom Prog", img)
-    cv2.waitKey(1)
+    key = cv2.waitKey(1)
+
+    if key == ord("a"):
+        if indexImg > 0:
+            indexImg -= 1
+
+    elif key == ord("d"):
+        if indexImg < len(imgList) - 1:
+            indexImg += 1
+
+    elif key == ord("q"):
+        break
